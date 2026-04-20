@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 // Contrôleurs
 use App\Http\Controllers\Api\ActualiteController;
 use App\Http\Controllers\Api\ProgrammeController;
-// use App\Http\Controllers\Api\PublicationController; // (A générer)
+use App\Http\Controllers\Api\PublicationController;
 use App\Http\Controllers\Api\StatistiqueController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\AuthController;
@@ -43,8 +43,11 @@ Route::prefix('v1')->group(function() {
         Route::post('auth/logout', [AuthController::class, 'logout']);
         Route::get('auth/me', function (Request $request) { return $request->user(); });
 
-        // Route::apiResource('actualites', ActualiteAdminController::class)->except(['index','show']);
-        // Route::apiResource('programmes', ProgrammeAdminController::class)->except(['index','show']);
+        Route::apiResource('actualites', \App\Http\Controllers\Api\Admin\ActualiteController::class);
+        Route::apiResource('programmes', \App\Http\Controllers\Api\Admin\ProgrammeController::class);
+        Route::apiResource('publications', \App\Http\Controllers\Api\Admin\PublicationController::class);
+        
+        Route::get('statistiques', [StatistiqueController::class, 'index']);
         Route::put('statistiques/{id}', [StatistiqueController::class, 'update']);
     });
 });

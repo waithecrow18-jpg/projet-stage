@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Statistique;
+use Illuminate\Http\Request;
 
 class StatistiqueController extends Controller
 {

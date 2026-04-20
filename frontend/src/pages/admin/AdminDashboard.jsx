@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import AdminLayout from '../../components/admin/AdminLayout.jsx'
-import { FileText, Blocks, FileCheck, MailType } from 'lucide-react'
+import { FileText, Blocks, FileCheck, Mail } from 'lucide-react'
 import api from '../../utils/api.js'
 
 function StatCard({ title, value, icon: Icon, colorClass }) {
@@ -44,7 +44,7 @@ export default function AdminDashboard() {
         <StatCard title="Actualités" value={loading ? '-' : stats.actualites} icon={FileText} colorClass="bg-blue-50 text-blue-600" />
         <StatCard title="Programmes" value={loading ? '-' : stats.programmes} icon={Blocks} colorClass="bg-green-50 text-emerald-600" />
         <StatCard title="Publications" value={loading ? '-' : stats.publications} icon={FileCheck} colorClass="bg-red-50 text-red-600" />
-        <StatCard title="Messages Web" value={loading ? '-' : stats.contacts} icon={MailType} colorClass="bg-amber-50 text-amber-600" />
+        <StatCard title="Messages Web" value={loading ? '-' : stats.contacts} icon={Mail} colorClass="bg-amber-50 text-amber-600" />
       </div>
 
       {/* Tableau dernières actus */}
