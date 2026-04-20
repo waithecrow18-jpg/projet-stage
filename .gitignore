@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Laravel
+backend/.env
+backend/storage/logs/*.log
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/views/
+backend/bootstrap/cache/*.php
+
+# Frontend build
+frontend/dist/
+frontend/.env
+frontend/environment-ma/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
