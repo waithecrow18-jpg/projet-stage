@@ -118,7 +118,7 @@ export default function ActualitesPage() {
                           <TiltCard intensity={8} className="h-full flex flex-col group block cursor-pointer">
                             <div className="h-48 relative overflow-hidden bg-primaryMid/10">
                                <img
-                                  src={article.image || 'https://images.unsplash.com/photo-1473448928818-208e3ebc03e1?auto=format&fit=crop&q=80'}
+                                  src={article.image ? (article.image.startsWith('http') ? article.image : `http://localhost:8000${article.image}`) : 'https://images.unsplash.com/photo-1473448928818-208e3ebc03e1?auto=format&fit=crop&q=80'}
                                   alt={article.title || article.titre}
                                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                />

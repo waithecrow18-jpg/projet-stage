@@ -1,47 +1,15 @@
 /**
  * ActualitesSection.jsx — Dernières actualités avec effet TiltCard
  * ─────────────────────────────────────────────────────────────────
- * 3 articles mockés, grille responsive, hover tilt 3D via useMouseTilt.
+ * 3 articles depuis l'API, grille responsive, hover tilt 3D via useMouseTilt.
  */
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Calendar, Tag } from 'lucide-react'
 import { useScrollAnimation } from '../../hooks/useScrollAnimation.js'
 import { useMouseTilt } from '../../hooks/useMouseTilt.js'
-
-/* ── Mock data ────────────────────────────────────────────── */
-const ARTICLES = [
-  {
-    id: 1,
-    titre: 'Lancement du Plan National de Reboisement 2025–2030',
-    categorie: 'Programmes',
-    date: '15 Mars 2025',
-    extrait: 'Le Maroc lance un programme ambitieux visant la plantation de 600 000 hectares de forêts afin de lutter contre la désertification et de restaurer les écosystèmes forestiers dégradés.',
-    image: null,
-    slug: 'plan-national-reboisement-2025',
-    couleur: '#0F6E56',
-  },
-  {
-    id: 2,
-    titre: 'COP30 : La délégation marocaine présente ses engagements climatiques',
-    categorie: 'Événements',
-    date: '10 Mars 2025',
-    extrait: 'Dans le cadre de la COP30 au Brésil, le Maroc présente une contribution renforcée avec un objectif de réduction des émissions GES de 45,5 % d\'ici 2030.',
-    image: null,
-    slug: 'cop30-delegation-marocaine',
-    couleur: '#185FA5',
-  },
-  {
-    id: 3,
-    titre: 'Rapport : État des forêts du Rif en 2024',
-    categorie: 'Publications',
-    date: '05 Mars 2025',
-    extrait: 'Le rapport annuel 2024 sur l\'état des forêts du Rif révèle une régénération notable dans les zones protégées, accompagnée d\'enjeux persistants liés aux incendies.',
-    image: null,
-    slug: 'rapport-forets-rif-2024',
-    couleur: '#BA7517',
-  },
-]
+import api from '../../utils/api.js'
 
 /* ── Gradient placeholder pour les images manquantes ── */
 const CARD_GRADIENTS = [
@@ -53,6 +21,12 @@ const CARD_GRADIENTS = [
 /* ── TiltCard sub-component ───────────────────────────────── */
 function TiltCard({ article, gradient, delay }) {
   const { ref, onMouseMove, onMouseLeave } = useMouseTilt({ maxTilt: 8, scale: 1.02 })
+
+  // Use image if exists, handle full API URL logic if need be
+  // Assuming 'image' is relative like '/storage/xxxx.jpg' or full URL.
+  const imageUrl = article.image 
+    ? (article.image.startsWith('http') ? article.image : `http://localhost:8000${article.image}`)
+    : null;
 
   return (
     <motion.article
@@ -74,10 +48,10 @@ function TiltCard({ article, gradient, delay }) {
         className="w-full flex-shrink-0 relative overflow-hidden"
         style={{ height: 200, background: gradient }}
       >
-        {article.image ? (
+        {imageUrl ? (
           <img
-            src={article.image}
-            alt={article.titre}
+            src={imageUrl}
+            alt={article.titre_fr}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -113,7 +87,7 @@ function TiltCard({ article, gradient, delay }) {
           style={{ color: 'var(--color-text-secondary)', fontFamily: 'var(--font-body)' }}
         >
           <Calendar className="w-3.5 h-3.5" />
-          {article.date}
+          {new Date(article.date_publication).toLocaleDateString()}
         </p>
 
         {/* Title */}
@@ -121,7 +95,7 @@ function TiltCard({ article, gradient, delay }) {
           className="font-display font-semibold mb-3 leading-snug"
           style={{ fontSize: '1.05rem', color: 'var(--color-dark)' }}
         >
-          {article.titre}
+          {article.titre_fr}
         </h3>
 
         {/* Excerpt */}
@@ -136,7 +110,7 @@ function TiltCard({ article, gradient, delay }) {
             overflow: 'hidden',
           }}
         >
-          {article.extrait}
+          {article.extrait_fr}
         </p>
 
         {/* Lire la suite */}
@@ -162,6 +136,24 @@ function TiltCard({ article, gradient, delay }) {
  */
 export default function ActualitesSection() {
   const { ref, isInView, fadeInUp, staggerContainer } = useScrollAnimation()
+  const [articles, setArticles] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const { data } = await api.get('/actualites', { params: { per_page: 3 } })
+        // If data.data exists (pagination), grab only first 3 items.
+        const items = data.data ? data.data : data
+        setArticles(items.slice(0, 3))
+      } catch (e) {
+        console.error("Failed to load news", e)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchArticles()
+  }, [])
 
   return (
     <section className="py-24 bg-white" aria-label="Dernières actualités">
@@ -205,14 +197,24 @@ export default function ActualitesSection() {
 
         {/* ── Cards grid ── */}
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {ARTICLES.map((article, i) => (
-            <TiltCard
-              key={article.id}
-              article={article}
-              gradient={CARD_GRADIENTS[i]}
-              delay={i * 0.1}
-            />
-          ))}
+          {loading ? (
+             <div className="col-span-1 sm:col-span-2 lg:col-span-3 py-12 text-center text-gray-400">
+               Chargement des actualités...
+             </div>
+          ) : articles.length > 0 ? (
+            articles.map((article, i) => (
+              <TiltCard
+                key={article.id}
+                article={article}
+                gradient={CARD_GRADIENTS[i % 3]}
+                delay={i * 0.1}
+              />
+            ))
+          ) : (
+             <div className="col-span-1 sm:col-span-2 lg:col-span-3 py-12 text-center text-gray-400">
+               Aucune actualité disponible pour le moment.
+             </div>
+          )}
         </div>
       </div>
     </section>
