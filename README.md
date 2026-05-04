@@ -7,7 +7,6 @@ Stack : **React 18 + Vite 5 + Tailwind 3** (frontend) · **Laravel 11 + Sanctum*
 ## Cahier des charges
 
 - [Voir le PDF](cahier%20de%20charge.pdf)
-- [Telecharger le fichier Word](cahier%20de%20charge.docx)
 
 ---
 
